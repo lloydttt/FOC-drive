@@ -68,9 +68,18 @@ void setPWM(float a, float b, float c){
 // PWM赋值
 
 
-// 
+
+
+// 解码获取机械角度
+
+
+
+// 位置闭环计算电角度，计算u_q（力矩同时闭环）   调用cal_e_angle求电角度
 
 void cal_kernal(){
+
+
+    // 加入计算u_q
     elec_angle = Normalize(elec_angle + zero_angle);
     u_alpha = -u_q * sin(elec_angle);
     u_beta = u_q * cos(elec_angle);

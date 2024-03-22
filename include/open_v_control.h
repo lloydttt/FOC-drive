@@ -76,6 +76,7 @@ void cal_v(){
 }
 
 // 开环速度解算，Key：单次运行时间（mircos()函数）本次时间戳减去上次时间戳为单次循环时间
+// 代替了位置闭环中，机械角度闭环与u_q计算，速度开环，力矩给定
 
 void cal_kernal(){
     elec_angle = Normalize(elec_angle + zero_angle);
