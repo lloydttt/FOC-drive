@@ -44,9 +44,13 @@ void cal_e_angle(){
 // 电角度求解
 
 void setPWM(float a, float b, float c){
-    ledcWrite(channel_A, a);
-    ledcWrite(channel_B, b);
-    ledcWrite(channel_C, c);
+    pwm_a = _constrain(a / motor.elec_volt_constrain, 0.0f , 1.0f );
+    pwm_b = _constrain(b / motor.elec_volt_constrain, 0.0f , 1.0f );
+    pwm_c = _constrain(c / motor.elec_volt_constrain, 0.0f , 1.0f );
+
+    ledcWrite(channel_A, pwm_a*255);
+    ledcWrite(channel_B, pwm_b*255);
+    ledcWrite(channel_C, pwm_c*255);
 }
 
 // PWM赋值

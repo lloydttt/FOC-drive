@@ -19,7 +19,15 @@ void cal_v(){
 
 
 void cal_kernal(){
+    elec_angle = Normalize(elec_angle + zero_angle);
+    u_alpha = -u_q * sin(elec_angle);
+    u_beta = u_q * cos(elec_angle);
 
+// park逆变换
+    u_a = u_alpha + motor.elec_volt_constrain/2;
+    u_b = (sqrt(3)*u_beta - u_alpha)/2 + motor.elec_volt_constrain/2;
+    u_c = (-sqrt(3)*u_beta - u_alpha)/2 + motor.elec_volt_constrain/2;
 
+// Clarke逆变换
 
 }
