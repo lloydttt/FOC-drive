@@ -1,6 +1,8 @@
 #ifndef NDEF_MOTOR_H
 #define NDEF_MOTOR_H
 
+#pragma once
+
 #define PWM_A 32
 #define PWM_B 33
 #define PWM_C 25
