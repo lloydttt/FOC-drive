@@ -1,18 +1,19 @@
 #include <Arduino.h>
 
-#include "open_v_control.h"
+#include "closet_p_control.h"
+#include <AS5600.h>
 
 void setup() {
   Serial.begin(115200);
-  ov_init();
+  cp_init();
   delay(1500);
-  Serial.print("open vocility initialized");
+  // Serial.print("open vocility initialized");
 
 
 }
 
 void loop() {
-  open_v_run();
+  test();
 
 }
 

@@ -8,6 +8,9 @@
 #include <cmath>
 
 
+// 用CV模式，电流最高给到1A+。慎用，电机发热严重。
+
+
 float mach_angle=0, elec_angle=0;
 float u_d=0, u_q=0, u_alpha=0, u_beta=0, u_a=0, u_b=0, u_c=0, pwm_a=0, pwm_b=0, pwm_c=0;
 float timestamp=0, zero_angle=0;
@@ -35,7 +38,7 @@ void ov_init(){
 MOTOR motor = {
     12.5f, //额定电压
     7.0f,  //电机 极对数
-    5.0f,  //目标速度   rad/s
+    10.0f,  //目标速度   rad/s
     0.0f   //目标力矩
 };
 float a = motor.motor_pairs;
