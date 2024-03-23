@@ -61,16 +61,18 @@ void setPWM(float a, float b, float c){
 
 // 解码获取机械角度
 
-void gen_i(){
+float generate_i(){
     PID gen_uq;
-    // PID_Init(gen_uq, )
-
+    PID_Init(&gen_uq, 0.133, 0, 0, 6, 0.9);
+    PID_calc(&gen_uq, motor.motor_pairs * aim_angle, elec_angle);
+    float res = gen_uq.output;
+    return res;
 }
 
 // 位置闭环计算电角度，计算u_q（力矩同时闭环）   调用cal_e_angle求电角度
 
 void cal_R_kernal(){
-
+    u_q = generate_i();
 
     // 计算u_q
     elec_angle = Normalize(elec_angle);
