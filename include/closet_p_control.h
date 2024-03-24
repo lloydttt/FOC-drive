@@ -80,12 +80,12 @@ void put_u(float a){
 
 // 位置闭环计算电角度，计算u_q（力矩同时闭环）   调用cal_e_angle求电角度
 
-void cal_R_kernal(){
+void cal_R_kernal(float Uq,float angle_el){
 
 
-    elec_angle = Normalize(elec_angle);
-    u_alpha = -u_q * sin(elec_angle);
-    u_beta = u_q * cos(elec_angle);
+    angle_el = Normalize(angle_el);
+    u_alpha = -Uq * sin(angle_el);
+    u_beta = Uq * cos(angle_el);
 
 // park逆变换
     u_a = u_alpha + motor.elec_volt_constrain/2;
@@ -111,15 +111,14 @@ void cp_init(){
     delay(500);
     BeginSensor();
 
-    u_q = 3;
-    elec_angle = _3PI_2;
-    cal_R_kernal();
+    // u_q = 3;
+    // elec_angle = _3PI_2;
+    cal_R_kernal(u_q, _3PI_2);
     delay(3000);
     cal_e_angle();
     zero_e_angle = elec_angle;
-    u_q = 0;
-    elec_angle = _3PI_2;
-    cal_R_kernal();
+
+    cal_R_kernal(0, _3PI_2);
     cal_e_angle();
     PID_Init(&gen_uq, 0.133, 0, 0, 50, 0.9);
     // cal_e_angle();
@@ -150,7 +149,7 @@ void test(){
     put_u(sensor_angle);
     // Serial.print("角度:");Serial.println(sensor_angle);
     cal_e_angle();
-    cal_R_kernal();
+    cal_R_kernal(u_q, elec_angle);
     // delay(1);
 }
 

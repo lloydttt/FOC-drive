@@ -30,6 +30,7 @@ PID gen_uq_v;
 
 Sensor_AS5600 S0=Sensor_AS5600(0);
 TwoWire S0_I2C = TwoWire(0);
+LowPassFilter M0_Vel_Flt = LowPassFilter(0.01); 
 
 MOTOR motor = {
     12.6f, //额定电压
@@ -114,7 +115,10 @@ void cv_init(){
     ledcAttachPin(PWM_B, channel_B);
     ledcAttachPin(PWM_C, channel_C);
     delay(500);
-    S0.Sensor_init();
+    S0_I2C.begin(19,18, 400000UL);
+    S0.Sensor_init(&S0_I2C);   //初始化编码器0
+    Serial.println("编码器加载完毕");
+
 
     float u_q = 3;
     elec_angle = _3PI_2;
@@ -127,19 +131,7 @@ void cv_init(){
     cal_R_kernal(u_q);
     cal_e_angle();
     PID_Init(&gen_uq_p, 0.133, 0, 0, 50, 0.9);
-    // cal_e_angle();
-    // put_u();
-    // cal_R_kernal();
-    // delay(2);
-    // cal_e_angle();
-    // zero_e_angle = elec_angle;
 
-    // gen_uq.kp = 0.133;
-// 校准
-
-    // delay(3000);
-    // zero_e_angle=_electricalAngle();
-    // setPhaseVoltage(0, 0,PI*1.5);
     Serial.print("0电角度:");Serial.println(zero_e_angle);
     delay(100);
 }
@@ -157,7 +149,7 @@ void closet_v(){
 
 
 void closet_p(float an){
-    aim_angle = an;
+    aim_angle = -an;
     float sensor_angle = S0.getAngle();
     cal_e_angle();
     float u_q_p = put_u(sensor_angle);
