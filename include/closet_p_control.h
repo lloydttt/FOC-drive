@@ -12,7 +12,7 @@
 float elec_angle=0;
 float u_d=0, u_q=0, u_alpha=0, u_beta=0, u_a=0, u_b=0, u_c=0, pwm_a=0, pwm_b=0, pwm_c=0;
 float timestamp=0, zero_e_angle=0;
-float aim_angle = -PI/2;  //rad
+float aim_angle = -PI/2;  //rad  注意要为负
 
 int DIR = 1;
 
