@@ -12,18 +12,22 @@
 float elec_angle=0;
 float u_d=0, u_q=0, u_alpha=0, u_beta=0, u_a=0, u_b=0, u_c=0, pwm_a=0, pwm_b=0, pwm_c=0;
 float timestamp=0, zero_e_angle=0;
-float aim_angle = 0;
+float aim_angle = -PI/2;  //rad
 
+int DIR = 1;
+
+#define _3PI_2 4.71238898038f
 // 相关参数定义
 
 #define _constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 
 // cv使用宏定义的限制函数增快运行速度 使用问号表达式
 
+PID gen_uq;
 
 
 MOTOR motor = {
-    12.5f, //额定电压
+    12.6f, //额定电压
     7.0f,  //电机 极对数
     5.0f,  //目标速度   rad/s
     0.0f   //目标力矩
@@ -39,7 +43,9 @@ float Normalize(float angle_i){
 // 归一化取模，使大于2pi的弧度均转为之内
 
 void cal_e_angle(){
-    elec_angle = (float)(motor.motor_pairs * getAngle_Without_track() - zero_e_angle);
+    elec_angle = (float)((motor.motor_pairs * DIR) * getAngle_Without_track() - zero_e_angle);
+
+    // Serial.print("e_angle = ");Serial.println(elec_angle);
 }
 
 // 电角度求解
@@ -58,23 +64,25 @@ void setPWM(float a, float b, float c){
 
 
 
+float generate_i(float a){
 
-// 解码获取机械角度
-
-float generate_i(){
-    PID gen_uq;
-    PID_Init(&gen_uq, 0.133, 0, 0, 6, 0.9);
-    PID_calc(&gen_uq, motor.motor_pairs * aim_angle, elec_angle);
-    float res = gen_uq.output;
+    PID_calc(&gen_uq, aim_angle, (DIR * a));
+    float res = gen_uq.output*180/PI;
+    // Serial.print(" res=");Serial.println(res);
     return res;
+}
+
+void put_u(float a){
+    u_q = generate_i(a);
+    u_q = _constrain(u_q, -6, 6);
+    // Serial.print(" u_q=");Serial.println(u_q);
 }
 
 // 位置闭环计算电角度，计算u_q（力矩同时闭环）   调用cal_e_angle求电角度
 
 void cal_R_kernal(){
-    u_q = generate_i();
 
-    // 计算u_q
+
     elec_angle = Normalize(elec_angle);
     u_alpha = -u_q * sin(elec_angle);
     u_beta = u_q * cos(elec_angle);
@@ -102,33 +110,53 @@ void cp_init(){
     ledcAttachPin(PWM_C, channel_C);
     delay(500);
     BeginSensor();
+
     u_q = 3;
-    elec_angle = 1.5*PI;
+    elec_angle = _3PI_2;
     cal_R_kernal();
     delay(3000);
     cal_e_angle();
     zero_e_angle = elec_angle;
     u_q = 0;
-    elec_angle = 1.5*PI;
+    elec_angle = _3PI_2;
     cal_R_kernal();
     cal_e_angle();
+    PID_Init(&gen_uq, 0.133, 0, 0, 50, 0.9);
+    // cal_e_angle();
+    // put_u();
+    // cal_R_kernal();
+    // delay(2);
+    // cal_e_angle();
+    // zero_e_angle = elec_angle;
+
+    // gen_uq.kp = 0.133;
+// 校准
+
     // delay(3000);
     // zero_e_angle=_electricalAngle();
     // setPhaseVoltage(0, 0,PI*1.5);
     Serial.print("0电角度:");Serial.println(zero_e_angle);
-    
+    delay(100);
 }
 // 初始化函数
 
 
 void test(){
-    float temp = getAngle_Without_track();
-    Serial.println(temp);
-    delay(100);
+    // float temp = getAngle_Without_track();
+    // Serial.println(temp);
+    // delay(100);
+    float sensor_angle = getAngle();
+    cal_e_angle();
+    put_u(sensor_angle);
+    // Serial.print("角度:");Serial.println(sensor_angle);
+    cal_e_angle();
+    cal_R_kernal();
+    // delay(1);
 }
 
 
 
 // 执行/测试
+
 
 #endif
